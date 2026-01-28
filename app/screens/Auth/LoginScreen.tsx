@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     fontSize: 16,
     color: colors.textPrimary,
-    // transition: 0.2,
+    // transition: 'all 0.2s',
   },
   inputFocused: {
     borderColor: colors.primary,

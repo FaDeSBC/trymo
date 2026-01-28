@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { getMessages, sendMessage, markMessagesAsRead, subscribeToMessages, Message } from '../../services/messageService';
-import { Colors } from '../../constants/Colors';
+import { colors } from '../../constants/Colors';
 import { formatTime } from '../../utils/formatDate';
 
 export default function ChatScreen({ route, navigation }: any) {
@@ -98,35 +98,39 @@ export default function ChatScreen({ route, navigation }: any) {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>← Back</Text>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Sling bag in bus</Text>
-          <Text style={styles.headerSubtitle}>Roy Manglicmot</Text>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>👤</Text>
+          </View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.headerTitle}>Chat</Text>
+            <Text style={styles.headerSubtitle}>Active now</Text>
+          </View>
         </View>
-        <TouchableOpacity onPress={() => {
-          Alert.alert(
-            'Options',
-            '',
-            [
-              { text: 'Delete', onPress: handleDeleteConversation, style: 'destructive' },
-              { text: 'Report', onPress: handleReport },
-              { text: 'Cancel', style: 'cancel' },
-            ]
-          );
-        }}>
-          <Text style={styles.moreButton}>⋮</Text>
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'Options',
+              '',
+              [
+                { text: 'Delete', onPress: handleDeleteConversation, style: 'destructive' },
+                { text: 'Report', onPress: handleReport },
+                { text: 'Cancel', style: 'cancel' },
+              ]
+            );
+          }}
+          style={styles.moreButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.moreButtonText}>⋮</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* Claimer Info Banner */}
-      <View style={styles.claimerBanner}>
-        <Text style={styles.claimerName}>Shie Faly Ezail Abadia</Text>
-        <Text style={styles.claimerInfo}>Gender : Female</Text>
-        <Text style={styles.claimerInfo}>Age : 22</Text>
-        <Text style={styles.claimerInfo}>Student</Text>
-        <Text style={styles.claimerInfo}>Contact no : 09398384135</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -141,6 +145,7 @@ export default function ChatScreen({ route, navigation }: any) {
           renderItem={renderMessage}
           contentContainerStyle={styles.messagesList}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+          showsVerticalScrollIndicator={false}
         />
 
         <View style={styles.inputContainer}>
@@ -148,13 +153,16 @@ export default function ChatScreen({ route, navigation }: any) {
             style={styles.input}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Type the message"
+            placeholder="Type a message..."
+            placeholderTextColor={colors.textMuted}
             multiline
+            maxLength={500}
           />
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSend}
             disabled={!inputText.trim() || loading}
+            activeOpacity={0.8}
           >
             <Text style={styles.sendIcon}>➤</Text>
           </TouchableOpacity>
@@ -167,134 +175,181 @@ export default function ChatScreen({ route, navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: Colors.white,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
+    borderBottomColor: colors.border,
   },
   backButton: {
-    fontSize: 16,
-    color: Colors.primary,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  backButtonText: {
+    fontSize: 20,
+    color: colors.primary,
+    fontWeight: '600',
   },
   headerCenter: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  avatarText: {
+    fontSize: 20,
+  },
+  headerInfo: {
+    flex: 1,
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text.primary,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   headerSubtitle: {
     fontSize: 12,
-    color: Colors.text.secondary,
+    color: colors.textSecondary,
+    marginTop: 2,
+    fontWeight: '500',
   },
   moreButton: {
-    fontSize: 24,
-    color: Colors.text.primary,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  claimerBanner: {
-    backgroundColor: Colors.primaryLight,
-    padding: 15,
-  },
-  claimerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.white,
-    marginBottom: 4,
-  },
-  claimerInfo: {
-    fontSize: 12,
-    color: Colors.white,
-    marginBottom: 2,
+  moreButtonText: {
+    fontSize: 20,
+    color: colors.textPrimary,
   },
   content: {
     flex: 1,
   },
   messagesList: {
-    padding: 15,
+    padding: 16,
+    flexGrow: 1,
   },
   messageContainer: {
-    marginVertical: 5,
+    marginVertical: 4,
+    maxWidth: '80%',
   },
   myMessage: {
-    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
   },
   otherMessage: {
-    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
   },
   messageBubble: {
-    maxWidth: '75%',
     padding: 12,
-    borderRadius: 15,
+    borderRadius: 16,
+    shadowColor: colors.textPrimary,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
   myBubble: {
-    backgroundColor: Colors.primary,
-    borderBottomRightRadius: 5,
+    backgroundColor: colors.primary,
+    borderBottomRightRadius: 4,
   },
   otherBubble: {
-    backgroundColor: Colors.white,
-    borderBottomLeftRadius: 5,
+    backgroundColor: colors.surface,
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   messageText: {
     fontSize: 15,
     lineHeight: 20,
   },
   myMessageText: {
-    color: Colors.white,
+    color: '#FFFFFF',
   },
   otherMessageText: {
-    color: Colors.text.primary,
+    color: colors.textPrimary,
   },
   messageTime: {
     fontSize: 11,
-    marginTop: 5,
+    marginTop: 4,
+    fontWeight: '500',
   },
   myMessageTime: {
-    color: Colors.white,
-    opacity: 0.8,
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   otherMessageTime: {
-    color: Colors.text.secondary,
+    color: colors.textMuted,
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: Colors.white,
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.lightGray,
+    borderTopColor: colors.border,
   },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderWidth: 1.5,
+    borderColor: colors.border,
     borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     marginRight: 10,
     maxHeight: 100,
+    fontSize: 15,
+    color: colors.textPrimary,
+    backgroundColor: colors.background,
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.primary,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    backgroundColor: colors.primary,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sendButtonDisabled: {
-    backgroundColor: Colors.gray,
+    backgroundColor: colors.textMuted,
     opacity: 0.5,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   sendIcon: {
-    color: Colors.white,
+    color: '#FFFFFF',
     fontSize: 18,
+    fontWeight: '600',
   },
 });
